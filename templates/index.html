@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CardioCheck | Heart Health Assessment</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Animate.css -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+    
+
+</head>
+<body>
+    <!-- Floating Medical Icons -->
+    <div class="floating-icons">
+        <div class="floating-icon"><i class="fas fa-heartbeat"></i></div>
+        <div class="floating-icon"><i class="fas fa-heart"></i></div>
+        <div class="floating-icon"><i class="fas fa-stethoscope"></i></div>
+        <div class="floating-icon"><i class="fas fa-plus-circle"></i></div>
+        <div class="floating-icon"><i class="fas fa-user-md"></i></div>
+        <div class="floating-icon"><i class="fas fa-chart-line"></i></div>
+    </div>
+    
+    <!-- Welcome Animation -->
+    <div class="welcome-screen">
+        <div class="heart-animation animate__animated animate__pulse">
+            <i class="fas fa-heart"></i>
+        </div>
+        <h1 class="welcome-title animate__animated animate__fadeIn">CardioCheck</h1>
+        <p class="welcome-subtitle animate__animated animate__fadeIn">Assessing your cardiovascular health with precision</p>
+    </div>
+    
+    <!-- Main Container (hidden initially) -->
+    <div class="main-container">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="container">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <div class="app-logo">
+                            <i class="fas fa-heartbeat"></i>
+                            CardioCheck
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="header-stats">
+                            <div class="stat-item">
+                                <i class="fas fa-users"></i>
+                                <span>100+ Assessments</span>
+                            </div>
+                            <div class="stat-item">
+                                <i class="fas fa-award"></i>
+                                <span>98.5% Accuracy</span>
+                            </div>
+                            <div class="stat-item">
+                                <i class="fas fa-shield-alt"></i>
+                                <span>User Feedback</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+        
+        <!-- Progress Indicator -->
+        <div class="container mt-4">
+            <div class="progress-indicator">
+                <div class="progress-step active" data-step="1">1</div>
+                <div class="progress-step" data-step="2">2</div>
+                <div class="progress-step" data-step="3">3</div>
+                <div class="progress-step" data-step="4">4</div>
+            </div>
+        </div>
+        
+        <!-- Assessment Section -->
+        <section class="container py-5">
+            <form id="assessment-form" method="POST" action="/">
+                <div class="assessment-container">
+                <!-- Card 1: Personal Information -->
+                <div class="assessment-card active" id="card1" data-card="1">
+                    <div class="card-header">
+                        <h2 class="card-title">
+                            <i class="fas fa-user"></i> Personal Information
+                        </h2>
+                        <p class="card-subtitle">Basic demographic information for risk assessment</p>
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-4">
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input type="number" class="form-control" id="age" name="age" min="18" max="120" required>
+                                    <label for="age">Age</label>
+                                    <div class="invalid-feedback">Please provide your age</div>
+                                    <div class="form-text">Between 18-100 years</div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <select class="form-select" id="sex" name="sex" required>
+                                        <option value="" selected disabled>Select...</option>
+                                        <option value="0">Female</option>
+                                        <option value="1">Male</option>
+                                    </select>
+                                    <label for="sex">Sex</label>
+                                    <div class="invalid-feedback">Please select your sex</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <div></div>
+                        <button type="button" class="btn btn-primary next-card" data-next="2">
+                            Continue <i class="fas fa-arrow-right ms-2"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Card 2: Health Metrics -->
+                <div class="assessment-card" id="card2" data-card="2">
+                    <div class="card-header">
+                        <h2 class="card-title">
+                            <i class="fas fa-heartbeat"></i> Health Metrics
+                        </h2>
+                        <p class="card-subtitle">Key physiological measurements</p>
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-4">
+                            <div class="col-md-6">
+                                <div class="form-floating position-relative">
+                                    <input type="number" class="form-control" id="bmi" name="bmi" min="10" max="60" step="0.1" required>
+                                    <label for="bmi">Body Mass Index (BMI)</label>
+                                    <div class="invalid-feedback">Please provide your BMI</div>
+                                    <div class="form-text">Weight(kg)/Height(m)²</div>
+                                    <i class="fas fa-info-circle info-icon" data-bs-toggle="tooltip" 
+                                       data-bs-placement="top" 
+                                       title="BMI is a measure of body fat based on height and weight"></i>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <select class="form-select" id="genhlth" name="genhlth" required>
+                                        <option value="" selected disabled>Select...</option>
+                                        <option value="1">Excellent</option>
+                                        <option value="2">Very Good</option>
+                                        <option value="3">Good</option>
+                                        <option value="4">Fair</option>
+                                        <option value="5">Poor</option>
+                                    </select>
+                                    <label for="genhlth">General Health</label>
+                                    <div class="invalid-feedback">Please select your general health</div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input type="number" class="form-control" id="menthlth" name="menthlth" min="0" max="30" required>
+                                    <label for="menthlth">Days of Poor Mental Health</label>
+                                    <div class="invalid-feedback">Please provide number of days</div>
+                                    <div class="form-text">In the past 30 days</div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input type="number" class="form-control" id="physhlth" name="physhlth" min="0" max="30" required>
+                                    <label for="physhlth">Days of Poor Physical Health</label>
+                                    <div class="invalid-feedback">Please provide number of days</div>
+                                    <div class="form-text">In the past 30 days</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <button type="button" class="btn btn-outline-secondary prev-card" data-prev="1">
+                            <i class="fas fa-arrow-left me-2"></i> Back
+                        </button>
+                        <button type="button" class="btn btn-primary next-card" data-next="3">
+                            Continue <i class="fas fa-arrow-right ms-2"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Card 3: Health Conditions -->
+                <div class="assessment-card" id="card3" data-card="3">
+                    <div class="card-header">
+                        <h2 class="card-title">
+                            <i class="fas fa-file-medical"></i> Health Conditions
+                        </h2>
+                        <p class="card-subtitle">Current and historical medical information</p>
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-4">
+                            <div class="col-md-6">
+                                <div class="form-floating position-relative">
+                                    <select class="form-select" id="highbp" name="highbp" required>
+                                        <option value="" selected disabled>Select...</option>
+                                        <option value="0">No</option>
+                                        <option value="1">Yes</option>
+                                    </select>
+                                    <label for="highbp">High Blood Pressure</label>
+                                    <div class="invalid-feedback">Please select an option</div>
+                                    <i class="fas fa-info-circle info-icon" data-bs-toggle="tooltip" 
+                                       data-bs-placement="top" 
+                                       title="Systolic ≥140 mmHg or Diastolic ≥90 mmHg"></i>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating position-relative">
+                                    <select class="form-select" id="highchol" name="highchol" required>
+                                        <option value="" selected disabled>Select...</option>
+                                        <option value="0">No</option>
+                                        <option value="1">Yes</option>
+                                    </select>
+                                    <label for="highchol">High Cholesterol</label>
+                                    <div class="invalid-feedback">Please select an option</div>
+                                    <i class="fas fa-info-circle info-icon" data-bs-toggle="tooltip" 
+                                       data-bs-placement="top" 
+                                       title="Total cholesterol ≥200 mg/dL"></i>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <select class="form-select" id="diabetes" name="diabetes" required>
+                                        <option value="" selected disabled>Select...</option>
+                                        <option value="0">No</option>
+                                        <option value="1">Yes</option>
+                                    </select>
+                                    <label for="diabetes">Diabetes</label>
+                                    <div class="invalid-feedback">Please select an option</div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <select class="form-select" id="smoker" name="smoker" required>
+                                        <option value="" selected disabled>Select...</option>
+                                        <option value="0">No</option>
+                                        <option value="1">Yes</option>
+                                    </select>
+                                    <label for="smoker">Current Smoker</label>
+                                    <div class="invalid-feedback">Please select an option</div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <select class="form-select" id="stroke" name="stroke">
+                                        <option value="" selected disabled>Select...</option>
+                                        <option value="0" selected>No</option>
+                                        <option value="1">Yes</option>
+                                    </select>
+                                    <label for="stroke">History of Stroke</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <select class="form-select" id="diffwalk" name="diffwalk" required>
+                                        <option value="" selected disabled>Select...</option>
+                                        <option value="0">No</option>
+                                        <option value="1">Yes</option>
+                                    </select>
+                                    <label for="diffwalk">Difficulty Walking</label>
+                                    <div class="invalid-feedback">Please select an option</div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <select class="form-select" id="cholcheck" name="cholcheck" required>
+                                        <option value="" selected disabled>Select...</option>
+                                        <option value="0">No</option>
+                                        <option value="1">Yes</option>
+                                    </select>
+                                    <label for="cholcheck">Cholesterol Check (Past 5 Years)</label>
+                                    <div class="invalid-feedback">Please select an option</div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <select class="form-select" id="education" name="education" required>
+                                        <option value="" selected disabled>Select...</option>
+                                        <option value="1">Never attended or kindergarten only</option>
+                                        <option value="2">Grades 1-8 (Elementary)</option>
+                                        <option value="3">Grades 9-11 (Some high school)</option>
+                                        <option value="4">Grade 12 or GED (High school graduate)</option>
+                                        <option value="5">College 1-3 years (Some college)</option>
+                                        <option value="6">College 4+ years (College graduate)</option>
+                                    </select>
+                                    <label for="education">Education Level</label>
+                                    <div class="invalid-feedback">Please select your education level</div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <select class="form-select" id="income" name="income" required>
+                                        <option value="" selected disabled>Select...</option>
+                                        <option value="1">Less than $10,000</option>
+                                        <option value="2">$10,000 to $14,999</option>
+                                        <option value="3">$15,000 to $19,999</option>
+                                        <option value="4">$20,000 to $24,999</option>
+                                        <option value="5">$25,000 to $34,999</option>
+                                        <option value="6">$35,000 to $49,999</option>
+                                        <option value="7">$50,000 to $74,999</option>
+                                        <option value="8">$75,000 or more</option>
+                                    </select>
+                                    <label for="income">Annual Household Income</label>
+                                    <div class="invalid-feedback">Please select your income range</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <button type="button" class="btn btn-outline-secondary prev-card" data-prev="2">
+                            <i class="fas fa-arrow-left me-2"></i> Back
+                        </button>
+                        <button type="button" class="btn btn-primary next-card" data-next="4">
+                            Continue <i class="fas fa-arrow-right ms-2"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Card 4: Lifestyle Factors -->
+                <div class="assessment-card" id="card4" data-card="4">
+                    <div class="card-header">
+                        <h2 class="card-title">
+                            <i class="fas fa-running"></i> Lifestyle Factors
+                        </h2>
+                        <p class="card-subtitle">Daily habits and behaviors</p>
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-4">
+                            <div class="col-md-6">
+                                <div class="form-floating position-relative">
+                                    <select class="form-select" id="physactivity" name="physactivity" required>
+                                        <option value="" selected disabled>Select...</option>
+                                        <option value="0">No</option>
+                                        <option value="1">Yes</option>
+                                    </select>
+                                    <label for="physactivity">Regular Physical Activity</label>
+                                    <div class="invalid-feedback">Please select an option</div>
+                                    <i class="fas fa-info-circle info-icon" data-bs-toggle="tooltip" 
+                                       data-bs-placement="top" 
+                                       title="At least 150 minutes of moderate activity per week"></i>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <select class="form-select" id="fruits" name="fruits" required>
+                                        <option value="" selected disabled>Select...</option>
+                                        <option value="0">No</option>
+                                        <option value="1">Yes</option>
+                                    </select>
+                                    <label for="fruits">Daily Fruit Consumption</label>
+                                    <div class="invalid-feedback">Please select an option</div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <select class="form-select" id="veggies" name="veggies" required>
+                                        <option value="" selected disabled>Select...</option>
+                                        <option value="0">No</option>
+                                        <option value="1">Yes</option>
+                                    </select>
+                                    <label for="veggies">Daily Vegetable Consumption</label>
+                                    <div class="invalid-feedback">Please select an option</div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <select class="form-select" id="hvyalcoholconsump" name="hvyalcoholconsump" required>
+                                        <option value="" selected disabled>Select...</option>
+                                        <option value="0">No</option>
+                                        <option value="1">Yes</option>
+                                    </select>
+                                    <label for="hvyalcoholconsump">Heavy Alcohol Consumption</label>
+                                    <div class="invalid-feedback">Please select an option</div>
+                                    <div class="form-text">More than 14 drinks per week (men) or 7 drinks (women)</div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <select class="form-select" id="anyhealthcare" name="anyhealthcare" required>
+                                        <option value="" selected disabled>Select...</option>
+                                        <option value="0">No</option>
+                                        <option value="1">Yes</option>
+                                    </select>
+                                    <label for="anyhealthcare">Healthcare Coverage</label>
+                                    <div class="invalid-feedback">Please select an option</div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <select class="form-select" id="nodocbccost" name="nodocbccost" required>
+                                        <option value="" selected disabled>Select...</option>
+                                        <option value="0">No</option>
+                                        <option value="1">Yes</option>
+                                    </select>
+                                    <label for="nodocbccost">No Doctor Consultation Due to Cost</label>
+                                    <div class="invalid-feedback">Please select an option</div>
+                                    <div class="form-text">In the past 12 months</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <button type="button" class="btn btn-outline-secondary prev-card" data-prev="3">
+                            <i class="fas fa-arrow-left me-2"></i> Back
+                        </button>
+                        <button type="submit" class="btn btn-success" id="submit-assessment">
+                            Get Results <i class="fas fa-heartbeat ms-2"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            </form>
+        </section>
+        
+        <!-- Results Section -->
+        <section class="container py-5 results-section" id="results-section" style="display: none;">
+            <div class="text-center mb-5">
+                <h2 class="display-5 fw-bold">Your Heart Health Assessment</h2>
+                <p class="lead">Review your personalized cardiovascular risk analysis</p>
+            </div>
+            
+            <!-- Gamification Elements -->
+            <div class="row mb-5">
+                <div class="col-md-4">
+                    <div class="level-indicator">
+                        <div class="level-badge">
+                            <span id="health-level">A+</span>
+                        </div>
+                        <div class="level-info">
+                            <h4>Health Level</h4>
+                            <p id="level-description">Heart Champion</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-8">
+                    <div class="achievements-container">
+                        <h4 class="mb-3"><i class="fas fa-trophy me-2"></i>Your Achievements</h4>
+                        <div id="achievements-list">
+                            <!-- Achievements will be populated by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Health Score Circle -->
+            <div class="row mb-5">
+                <div class="col-md-6">
+                    <div class="health-score-circle">
+                        <svg class="circle-progress" width="200" height="200">
+                            <defs>
+                                <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" style="stop-color:#1e40af;stop-opacity:1" />
+                                    <stop offset="50%" style="stop-color:#3b82f6;stop-opacity:1" />
+                                    <stop offset="100%" style="stop-color:#06b6d4;stop-opacity:1" />
+                                </linearGradient>
+                            </defs>
+                            <circle class="circle-bg" cx="100" cy="100" r="90"></circle>
+                            <circle class="circle-fill" cx="100" cy="100" r="90" id="health-circle"></circle>
+                        </svg>
+                        <div class="score-text">
+                            <div class="score-number" id="health-score">85</div>
+                            <div class="score-label">Health Score</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="health-insights">
+                        <h4 class="mb-3"><i class="fas fa-lightbulb me-2"></i>Key Insights</h4>
+                        <div id="health-insights-list">
+                            <!-- Insights will be populated by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Risk Meter -->
+            <div class="risk-meter-container">
+                <h3 class="mb-4">
+                    <i class="fas fa-heartbeat me-2" style="color: var(--cardio-red);"></i>
+                    Cardiovascular Risk Score
+                </h3>
+                <div class="d-flex justify-content-between align-items-center">
+                    <h4 id="risk-percentage" class="fw-bold" style="color: var(--cardio-red);">0%</h4>
+                    <span id="risk-category" class="badge bg-danger">High Risk</span>
+                </div>
+                <div class="risk-meter">
+                    <div class="risk-indicator" id="risk-indicator"></div>
+                </div>
+                <div class="risk-labels">
+                    <span class="risk-label">Low (0-30%)</span>
+                    <span class="risk-label">Moderate (31-70%)</span>
+                    <span class="risk-label">High (71-100%)</span>
+                </div>
+                <div class="mt-4">
+                    <p id="risk-interpretation" class="lead">Your cardiovascular risk assessment is being calculated...</p>
+                    <div id="risk-factors" class="alert alert-info">
+                        <strong>Analysis:</strong> Please wait while we process your health data.
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Risk Factor Distribution Chart -->
+            <div class="chart-container">
+                <h3 class="mb-4">
+                    <i class="fas fa-chart-pie me-2" style="color: var(--cardio-blue);"></i>
+                    Risk Factor Distribution
+                </h3>
+                <div class="chart-wrapper" style="position: relative; height:300px;">
+                    <canvas id="riskChart"></canvas>
+                </div>
+            </div>
+            
+            <!-- Comparison to Ideal Ranges -->
+            <div class="comparison-container">
+                <h3 class="mb-4">
+                    <i class="fas fa-balance-scale me-2" style="color: var(--cardio-accent);"></i>
+                    Comparison to Ideal Health Metrics
+                </h3>
+                <div id="comparison-items">
+                    <!-- Dynamic content will be populated here -->
+                </div>
+            </div>
+            
+            <!-- Shareable Summary -->
+            <div class="share-container">
+                <h3 class="mb-4">
+                    <i class="fas fa-share-alt me-2" style="color: var(--cardio-blue);"></i>
+                    Share Your Results
+                </h3>
+                <p class="mb-4">Download or share your personalized heart health report with your healthcare provider.</p>
+                <div>
+                    <button class="btn btn-primary share-btn" onclick="generatePDF()">
+                        <i class="fas fa-file-pdf"></i> PDF Report
+                    </button>
+                    <button class="btn btn-success share-btn" onclick="shareEmail()">
+                        <i class="fas fa-envelope"></i> Email
+                    </button>
+                    <button class="btn btn-info share-btn" onclick="printResults()">
+                        <i class="fas fa-print"></i> Print
+                    </button>
+                </div>
+                <div class="mt-4">
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        <strong>Important:</strong> This assessment is for informational purposes only and should not replace professional medical advice. Please consult with your healthcare provider for personalized medical guidance.
+                    </div>
+                </div>
+            </div>
+            
+            <div class="text-center mt-5">
+                <button class="btn btn-primary me-3" onclick="showAnalyticsDashboard()">
+                    <i class="fas fa-chart-line me-2"></i>View Advanced Analytics
+                </button>
+                <button class="btn btn-outline-primary" id="new-assessment-btn">
+                    <i class="fas fa-redo me-2"></i> Start New Assessment
+                </button>
+            </div>
+        </section>
+
+        <!-- Advanced Health Analytics Dashboard -->
+        <section class="container py-5 analytics-dashboard" id="analytics-dashboard" style="display: none;">
+            <div class="text-center mb-5">
+                <h2 class="display-5 fw-bold">
+                    <i class="fas fa-chart-line me-3"></i>Advanced Health Analytics
+                </h2>
+                <p class="lead">Comprehensive insights into your cardiovascular health patterns</p>
+            </div>
+
+            <!-- Health Metrics Grid -->
+            <div class="row g-4 mb-5">
+                <div class="col-lg-3 col-md-6">
+                    <div class="metric-card">
+                        <div class="metric-icon">
+                            <i class="fas fa-heart-pulse"></i>
+                        </div>
+                        <div class="metric-content">
+                            <h3 class="metric-value" id="heart-rate-metric">--</h3>
+                            <p class="metric-label">Heart Rate Zone</p>
+                            <div class="metric-progress">
+                                <div class="progress-bar" id="heart-rate-progress"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="metric-card">
+                        <div class="metric-icon">
+                            <i class="fas fa-weight"></i>
+                        </div>
+                        <div class="metric-content">
+                            <h3 class="metric-value" id="bmi-metric">--</h3>
+                            <p class="metric-label">BMI Category</p>
+                            <div class="metric-progress">
+                                <div class="progress-bar" id="bmi-progress"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="metric-card">
+                        <div class="metric-icon">
+                            <i class="fas fa-tint"></i>
+                        </div>
+                        <div class="metric-content">
+                            <h3 class="metric-value" id="cholesterol-metric">--</h3>
+                            <p class="metric-label">Cholesterol Level</p>
+                            <div class="metric-progress">
+                                <div class="progress-bar" id="cholesterol-progress"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="metric-card">
+                        <div class="metric-icon">
+                            <i class="fas fa-lungs"></i>
+                        </div>
+                        <div class="metric-content">
+                            <h3 class="metric-value" id="oxygen-metric">--</h3>
+                            <p class="metric-label">Cardiovascular Fitness</p>
+                            <div class="metric-progress">
+                                <div class="progress-bar" id="fitness-progress"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Interactive Risk Matrix -->
+            <div class="row g-4 mb-5">
+                <div class="col-lg-8">
+                    <div class="analytics-card">
+                        <div class="card-header">
+                            <h3><i class="fas fa-th me-2"></i>Risk Factor Heat Map</h3>
+                            <p>Visual representation of your cardiovascular risk factors</p>
+                        </div>
+                        <div class="card-body">
+                            <div class="risk-matrix" id="risk-matrix">
+                                <!-- Dynamic risk matrix will be generated here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="analytics-card">
+                        <div class="card-header">
+                            <h3><i class="fas fa-target me-2"></i>Health Goals</h3>
+                            <p>Personalized targets for improvement</p>
+                        </div>
+                        <div class="card-body">
+                            <div class="health-goals" id="health-goals">
+                                <!-- Dynamic goals will be populated here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Health Journey Tracker -->
+            <div class="analytics-card mb-5">
+                <div class="card-header">
+                    <h3><i class="fas fa-route me-2"></i>Health Journey Timeline</h3>
+                    <p>Track your cardiovascular health progress over time</p>
+                </div>
+                <div class="card-body">
+                    <div class="journey-timeline">
+                        <canvas id="health-journey-chart" width="100%" height="300"></canvas>
+                    </div>
+                    <div class="journey-controls mt-3">
+                        <button class="btn btn-sm btn-outline-primary" onclick="addTimelineEntry()">
+                            <i class="fas fa-plus me-1"></i>Add Entry
+                        </button>
+                        <button class="btn btn-sm btn-outline-secondary" onclick="exportTimeline()">
+                            <i class="fas fa-download me-1"></i>Export Data
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- AI-Powered Recommendations -->
+            <div class="row g-4 mb-5">
+                <div class="col-12">
+                    <div class="analytics-card">
+                        <div class="card-header">
+                            <h3><i class="fas fa-brain me-2"></i>AI Health Recommendations</h3>
+                            <p>Personalized suggestions based on advanced machine learning analysis</p>
+                        </div>
+                        <div class="card-body">
+                            <div class="recommendations-grid" id="ai-recommendations">
+                                <!-- AI recommendations will be populated here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Community Health Insights -->
+            <div class="row g-4 mb-5">
+                <div class="col-lg-6">
+                    <div class="analytics-card">
+                        <div class="card-header">
+                            <h3><i class="fas fa-users me-2"></i>Community Comparison</h3>
+                            <p>See how your health metrics compare to similar demographics</p>
+                        </div>
+                        <div class="card-body">
+                            <div class="community-stats" id="community-stats">
+                                <!-- Community comparison data -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="analytics-card">
+                        <div class="card-header">
+                            <h3><i class="fas fa-trophy me-2"></i>Health Achievements</h3>
+                            <p>Celebrate your cardiovascular health milestones</p>
+                        </div>
+                        <div class="card-body">
+                            <div class="achievements-grid" id="achievements">
+                                <!-- Health achievements -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Back to Results Button -->
+            <div class="text-center">
+                <button class="btn btn-primary" onclick="showResultsSection()">
+                    <i class="fas fa-arrow-left me-2"></i>Back to Results
+                </button>
+            </div>
+        </section>
+    </div>
+    
+    <!-- Bootstrap JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JavaScript -->
+    <script>
+        // Make server prediction available to our custom JS
+        window.serverPrediction = '{{ prediction|safe }}';
+    </script>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <!-- Share functions -->
+    <script>
+        function generatePDF() {
+            // Create a new window with printable content
+            const printWindow = window.open('', '_blank');
+            const prediction = document.querySelector('.results-section').innerHTML;
+            
+            printWindow.document.write(`
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <title>CardioCheck Health Report</title>
+                    <style>
+                        body { font-family: Arial, sans-serif; margin: 20px; }
+                        .header { text-align: center; margin-bottom: 30px; }
+                        .risk-meter { margin: 20px 0; }
+                        .chart-container { page-break-inside: avoid; }
+                        @media print { 
+                            .no-print { display: none; }
+                            .page-break { page-break-before: always; }
+                        }
+                    </style>
+                </head>
+                <body>
+                    <div class="header">
+                        <h1>CardioCheck Health Assessment Report</h1>
+                        <p>Generated on ${new Date().toLocaleDateString()}</p>
+                        <hr>
+                    </div>
+                    ${prediction}
+                    <div class="footer" style="margin-top: 30px; border-top: 1px solid #ccc; padding-top: 20px;">
+                        <p><strong>Disclaimer:</strong> This assessment is for informational purposes only and should not replace professional medical advice.</p>
+                    </div>
+                </body>
+                </html>
+            `);
+            
+            printWindow.document.close();
+            printWindow.print();
+        }
+        
+        function shareEmail() {
+            const subject = encodeURIComponent('My CardioCheck Health Assessment Results');
+            const body = encodeURIComponent(`I completed a cardiovascular risk assessment using CardioCheck on ${new Date().toLocaleDateString()}. The assessment provides detailed insights into my heart health risk factors and personalized recommendations.
+
+Please find my results in the attached report. This assessment is for informational purposes only and should not replace professional medical consultation.
+
+Generated by CardioCheck - Heart Health Assessment Platform`);
+            window.location.href = `mailto:?subject=${subject}&body=${body}`;
+        }
+        
+        function printResults() {
+            window.print();
+        }
+    </script>
+</body>
+</html>
